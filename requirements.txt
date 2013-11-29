@@ -1,0 +1,7 @@
+Django
+facepy
+python-social-auth
+django-discover-runner
+coverage
+mock
+exam
