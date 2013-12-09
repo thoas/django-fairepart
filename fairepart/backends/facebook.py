@@ -2,23 +2,17 @@ from facepy import GraphAPI, FacepyError
 
 from .base import BaseBackend
 
-from ..exceptions import MissingParameter, ImportFailed
+from ..exceptions import ImportFailed
 from ..utils import reraise_as
 from ..helpers import chunks
 
 
 class FacebookBackend(BaseBackend):
     name = 'facebook'
+    title = 'Facebook'
 
     def import_from_user(self, user):
-        social_auth = self.get_social_auth(user)
-
-        extra_data = social_auth.extra_data
-
-        access_token = extra_data.get('access_token', None)
-
-        if not access_token:
-            raise MissingParameter(self, 'access_token')
+        access_token = self.get_access_token(user)
 
         relations = dict((relation.uid, relation)
                          for relation in self.get_relations(user))

@@ -1,4 +1,4 @@
-from ..exceptions import ProviderDoesNotExist
+from ..exceptions import ProviderDoesNotExist, MissingParameter
 from ..models import Relation, UserSocialAuth
 
 
@@ -31,3 +31,15 @@ class BaseBackend(object):
 
     def get_social_auth_by_uids(self, uids):
         return self.get_social_model().objects.filter(uid__in=uids)
+
+    def get_access_token(self, user):
+        social_auth = self.get_social_auth(user)
+
+        extra_data = social_auth.extra_data
+
+        access_token = extra_data.get('access_token', None)
+
+        if not access_token:
+            raise MissingParameter(self, 'access_token')
+
+        return access_token
