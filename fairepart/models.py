@@ -27,7 +27,6 @@ class Relation(models.Model):
                                 related_name='relations_received',
                                 null=True,
                                 blank=True)
-    email = models.EmailField(null=True, blank=True)
     provider = models.CharField(max_length=32, db_index=True)
     uid = models.CharField(max_length=UID_LENGTH, db_index=True)
     extra_data = JSONField()

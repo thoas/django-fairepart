@@ -9,6 +9,8 @@ from django.core.urlresolvers import reverse
 from .backends import get_backends
 from .models import Relation
 
+from . import settings
+
 logger = logging.getLogger('fairepart')
 
 
@@ -34,7 +36,7 @@ class ImportView(generic.View):
 class RelationListView(generic.ListView):
     model = Relation
     template_name = 'fairepart/relation_list.html'
-    paginate_by = 10
+    paginate_by = settings.RELATION_LIST_PAGINATE_BY
 
     def get_queryset(self):
         qs = super(RelationListView, self).get_queryset().filter(from_user=self.request.user)
