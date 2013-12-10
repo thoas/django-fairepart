@@ -37,6 +37,7 @@ class RelationListView(generic.ListView):
     model = Relation
     template_name = 'fairepart/relation_list.html'
     paginate_by = settings.RELATION_LIST_PAGINATE_BY
+    context_object_name = 'relation_list'
 
     def get_queryset(self):
         qs = super(RelationListView, self).get_queryset().filter(from_user=self.request.user)
@@ -51,6 +52,10 @@ class RelationListView(generic.ListView):
     def get_context_data(self, **kwargs):
         context = super(RelationListView, self).get_context_data(**kwargs)
         context['provider'] = self.provider
+        context['from_user'] = self.request.user
+
+        for relation in context[self.context_object_name]:
+            relation.from_user = self.request.user
 
         return context
 
