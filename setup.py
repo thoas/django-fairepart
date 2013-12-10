@@ -23,6 +23,7 @@ setup(
     install_requires=[
         'facepy',
         'python-social-auth',
+        'gdata',
     ],
     classifiers=[
         'Environment :: Web Environment',
