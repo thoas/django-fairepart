@@ -31,9 +31,7 @@ class FacebookBackend(BaseBackend):
                 data = {
                     'from_user': user,
                     'uid': friend['id'],
-                    'extra_data': {
-                        'name': friend['name']
-                    },
+                    'name': friend['name'],
                     'provider': self.name
                 }
 

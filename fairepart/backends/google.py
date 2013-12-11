@@ -51,9 +51,7 @@ class GoogleOAuth2Backend(BaseBackend):
                 data = {
                     'from_user': user,
                     'uid': email.address,
-                    'extra_data': {
-                        'name': entry.title.text
-                    },
+                    'name': entry.title.text,
                     'provider': self.name
                 }
 

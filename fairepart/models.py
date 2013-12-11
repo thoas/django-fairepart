@@ -1,3 +1,7 @@
+from random import random
+
+from hashlib import sha1 as sha_constructor
+
 from django.db import models
 from django.db.models import signals
 from django.core.validators import validate_email
@@ -24,6 +28,7 @@ class RelationManager(models.Manager):
 
 
 class Relation(models.Model):
+    name = models.CharField(max_length=255, null=True, blank=True)
     from_user = models.ForeignKey(User, related_name='relations_sent')
     to_user = models.ForeignKey(User,
                                 related_name='relations_received',
@@ -47,6 +52,28 @@ class Relation(models.Model):
             return False
         else:
             return True
+
+
+class Invitation(models.Model):
+    from_user = models.ForeignKey(User, related_name='invitations_sent')
+    to_user = models.ForeignKey(User,
+                                related_name='invitations_received',
+                                null=True,
+                                blank=True)
+    email = models.EmailField()
+    text = models.TextField(blank=True, null=True)
+    token = models.CharField(max_length=40)
+
+    class Meta:
+        db_table = 'fairepart_invitation'
+
+    def save(self, *args, **kwargs):
+        if not self.token:
+            salt = sha_constructor(str(random())).hexdigest()[:5]
+
+            self.token = sha_constructor(salt + self.email).hexdigest()
+
+        return super(Invitation, self).save(*args, **kwargs)
 
 
 def handle_user(sender, instance, *args, **kwargs):

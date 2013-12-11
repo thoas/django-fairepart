@@ -8,7 +8,7 @@ from exam.decorators import fixture
 from exam.cases import Exam
 
 from fairepart.backends.facebook import FacebookBackend
-from fairepart.models import Relation, UserSocialAuth
+from fairepart.models import Relation, UserSocialAuth, Invitation
 from fairepart.compat import User
 
 from facepy import GraphAPI
@@ -51,6 +51,39 @@ class FacebookBackendTests(Exam, TestCase):
                 'access_token': 'fake-one'
             }
         )
+
+    def test_invite_view(self):
+        self.client.login(username=self.user.username,
+                          password='$ecret')
+
+        response = self.client.get(reverse('fairepart_invite'))
+
+        self.assertTemplateUsed(response, 'fairepart/invite.html')
+        self.assertEqual(response.status_code, 200)
+
+    def test_invite_complete(self):
+        self.client.login(username=self.user.username,
+                          password='$ecret')
+
+        email = 'dummy@localhost.fr'
+
+        response = self.client.post(reverse('fairepart_invite'), data={
+            'email': email
+        })
+
+        self.assertRedirects(
+            response,
+            reverse('fairepart_invite_done'),
+            status_code=302,
+            target_status_code=200
+        )
+
+        qs = Invitation.objects.filter(from_user=self.user, email=email)
+        self.assertEqual(qs.count(), 1)
+
+        invitation = qs.get()
+
+        self.assertFalse(invitation.token is None)
 
     @patch.object(FacebookBackend, 'get_friends')
     def test_import_from_user(self, get_friends):

@@ -3,11 +3,12 @@ from __future__ import unicode_literals
 import logging
 
 from django.views import generic
-from django.http import HttpResponseBadRequest, HttpResponseRedirect
+from django.http import HttpResponseBadRequest, HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 
 from .backends import get_backends
 from .models import Relation
+from .forms import InvitationForm
 
 from . import settings
 
@@ -68,3 +69,27 @@ class RelationListView(generic.ListView):
             ] + template_names
 
         return template_names
+
+
+class InviteView(generic.CreateView):
+    form_class = InvitationForm
+    template_name = 'fairepart/invite.html'
+
+    def get_form_kwargs(self):
+        kwargs = super(InviteView, self).get_form_kwargs()
+        kwargs['user'] = self.request.user
+
+        return kwargs
+
+    def form_valid(self, form):
+        if self.request.is_ajax():
+            return HttpResponse('Ok')
+
+        return super(InviteView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse('fairepart_invite_done')
+
+
+class InviteDoneView(generic.TemplateView):
+    template_name = 'fairepart/invite_done.html'
