@@ -61,6 +61,22 @@ class FacebookBackendTests(Exam, TestCase):
         self.assertTemplateUsed(response, 'fairepart/invite.html')
         self.assertEqual(response.status_code, 200)
 
+    def test_invite_errors(self):
+        self.client.login(username=self.user.username,
+                          password='$ecret')
+
+        email = 'dummy@localhost.fr'
+
+        Invitation.objects.create(from_user=self.user, email=email)
+
+        response = self.client.post(reverse('fairepart_invite'), data={
+            'email': email
+        })
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertIn('email', response.context['form'].errors)
+
     def test_invite_complete(self):
         self.client.login(username=self.user.username,
                           password='$ecret')
