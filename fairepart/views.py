@@ -82,10 +82,12 @@ class InviteView(generic.CreateView):
         return kwargs
 
     def form_valid(self, form):
+        self.object = form.save()
+
         if self.request.is_ajax():
             return HttpResponse('Ok')
 
-        return super(InviteView, self).form_valid(form)
+        return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
         return reverse('fairepart_invite_done')
