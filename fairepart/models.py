@@ -11,7 +11,7 @@ from social.apps.django_app.default.fields import JSONField
 from social.apps.django_app.default.models import UID_LENGTH, UserSocialAuth
 
 from .compat import User
-from .signals import relation_linked
+from .signals import relation_linked, relation_joined
 
 
 class RelationManager(models.Manager):
@@ -83,7 +83,7 @@ def handle_user(sender, instance, *args, **kwargs):
         for relation in relations:
             relation.to_user = instance
 
-            relation_linked.send(sender=Relation,
+            relation_joined.send(sender=Relation,
                                  instance=relation,
                                  user=instance)
 
@@ -97,7 +97,7 @@ def handle_user_social_auth(sender, instance, *args, **kwargs):
         for relation in relations:
             relation.to_user = instance.user
 
-            relation_linked.send(sender=Relation,
+            relation_joined.send(sender=Relation,
                                  instance=relation,
                                  user=instance.user)
 
