@@ -6,7 +6,7 @@ class ImportFailed(BaseFairepartException):
     def __init__(self, backend, access_token, *args, **kwargs):
         self.backend = backend
         self.access_token = access_token
-        super(ProviderDoesNotExist, self).__init__(backend, *args, **kwargs)
+        super(ImportFailed, self).__init__(backend, *args, **kwargs)
 
 
 class ProviderDoesNotExist(BaseFairepartException):

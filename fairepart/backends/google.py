@@ -13,7 +13,7 @@ class OAuth2Token(object):
         self.access_token = access_token
 
     def perform_request(self, *args, **kwargs):
-        url = 'http://www.google.com/m8/feeds/contacts/default/full'
+        url = 'https://www.google.com/m8/feeds/contacts/default/full'
         http = ProxiedHttpClient()
         return http.request(
             'GET',
