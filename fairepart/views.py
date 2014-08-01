@@ -85,7 +85,7 @@ class InviteView(generic.CreateView):
         self.object = form.save()
 
         if self.request.is_ajax():
-            return HttpResponse('Ok')
+            return HttpResponse('Ok', status=201)
 
         return HttpResponseRedirect(self.get_success_url())
 
