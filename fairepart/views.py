@@ -5,6 +5,7 @@ import logging
 from django.views import generic
 from django.http import HttpResponseBadRequest, HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
+from django.db.models import Q
 
 from .backends import get_backends
 from .models import Relation
@@ -47,6 +48,11 @@ class RelationListView(generic.ListView):
 
         if self.provider:
             qs = qs.filter(provider=self.provider)
+
+        query = self.request.GET.get('q', None)
+
+        if query:
+            qs = qs.filter(Q(name__contains=query) | Q(name__startswith=query))
 
         return qs
 
