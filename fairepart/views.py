@@ -52,7 +52,7 @@ class RelationListView(generic.ListView):
         query = self.request.GET.get('q', None)
 
         if query:
-            qs = qs.filter(Q(name__contains=query) | Q(name__startswith=query))
+            qs = qs.filter(Q(name__icontains=query) | Q(name__istartswith=query))
 
         return qs
 
