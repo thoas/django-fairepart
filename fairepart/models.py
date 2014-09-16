@@ -2,15 +2,17 @@ from random import random
 
 from hashlib import sha1 as sha_constructor
 
+import django
+
 from django.db import models
 from django.db.models import signals
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
+from django.conf import settings
 
 from social.apps.django_app.default.fields import JSONField
 from social.apps.django_app.default.models import UID_LENGTH, UserSocialAuth
 
-from .compat import User
 from .signals import relation_linked, relation_joined
 
 
@@ -29,8 +31,8 @@ class RelationManager(models.Manager):
 
 class Relation(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
-    from_user = models.ForeignKey(User, related_name='relations_sent')
-    to_user = models.ForeignKey(User,
+    from_user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='relations_sent')
+    to_user = models.ForeignKey(settings.AUTH_USER_MODEL,
                                 related_name='relations_received',
                                 null=True,
                                 blank=True)
@@ -55,8 +57,8 @@ class Relation(models.Model):
 
 
 class Invitation(models.Model):
-    from_user = models.ForeignKey(User, related_name='invitations_sent')
-    to_user = models.ForeignKey(User,
+    from_user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='invitations_sent')
+    to_user = models.ForeignKey(settings.AUTH_USER_MODEL,
                                 related_name='invitations_received',
                                 null=True,
                                 blank=True)
@@ -105,4 +107,15 @@ def handle_user_social_auth(sender, instance, *args, **kwargs):
 
 
 signals.post_save.connect(handle_user_social_auth, sender=UserSocialAuth)
-signals.post_save.connect(handle_user, sender=User)
+
+if django.VERSION < (1, 7):
+    from .compat import User
+
+    signals.post_save.connect(handle_user, sender=User)
+else:
+    from django.apps import apps
+
+    if apps.ready:
+        from .compat import User
+
+        signals.post_save.connect(handle_user, sender=User)
