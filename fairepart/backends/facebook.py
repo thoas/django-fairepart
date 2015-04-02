@@ -5,7 +5,6 @@ from facepy import GraphAPI, FacepyError
 from .base import BaseBackend
 
 from ..exceptions import ImportFailed
-from ..utils import reraise_as
 from ..helpers import chunks
 
 logger = logging.getLogger('fairepart')
@@ -26,7 +25,7 @@ class FacebookBackend(BaseBackend):
         except FacepyError as e:
             logger.exception(e)
 
-            reraise_as(ImportFailed(self, access_token, e.message))
+            raise ImportFailed(self, access_token, e.message)
         else:
             uids = {}
 

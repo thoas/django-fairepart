@@ -1,5 +1,4 @@
-import inspect
-import sys
+import six
 
 from django.core import exceptions
 try:
@@ -21,7 +20,7 @@ def load_class(class_path, setting_name=None):
     The setting_name parameter is only there for pretty error output, and
     therefore is optional
     """
-    if not isinstance(class_path, basestring):
+    if not isinstance(class_path, six.string_types):
         try:
             class_path, app_label = class_path
         except:
@@ -65,30 +64,3 @@ def load_class(class_path, setting_name=None):
                 class_module, class_name)
         raise exceptions.ImproperlyConfigured(txt)
     return clazz
-
-
-def reraise_as(new_exception_or_type):
-    """
-    Obtained from https://github.com/dcramer/reraise/blob/master/src/reraise.py
-    >>> try:
-    >>>     do_something_crazy()
-    >>> except Exception:
-    >>>     reraise_as(UnhandledException)
-    """
-    __traceback_hide__ = True  # NOQA
-
-    e_type, e_value, e_traceback = sys.exc_info()
-
-    if inspect.isclass(new_exception_or_type):
-        new_type = new_exception_or_type
-        new_exception = new_exception_or_type()
-    else:
-        new_type = type(new_exception_or_type)
-        new_exception = new_exception_or_type
-
-    new_exception.__cause__ = e_value
-
-    try:
-        raise new_type, new_exception, e_traceback
-    finally:
-        del e_traceback
