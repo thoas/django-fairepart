@@ -1,9 +1,11 @@
-#-*- coding: utf-8 -*-
 import inspect
 import sys
 
 from django.core import exceptions
-from django.utils.importlib import import_module
+try:
+    from importlib import import_module
+except ImportError:
+    from django.utils.importlib import import_module  # noqa
 
 
 CLASS_PATH_ERROR = 'django-fairepart is unable to interpret settings value for %s. '\
@@ -42,7 +44,7 @@ def load_class(class_path, setting_name=None):
 
     try:
         mod = import_module(class_module)
-    except ImportError, e:
+    except ImportError as e:
         if setting_name:
             txt = 'Error importing backend %s: "%s". Check your %s setting' % (
                 class_module, e, setting_name)
