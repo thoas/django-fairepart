@@ -33,7 +33,7 @@ class BaseBackend(object):
         return self.get_social_model().objects.filter(uid__in=uids)
 
     def get_access_token(self, user):
-        social_auth = self.get_social_auth(user)
+        social_auth = getattr(user, 'social_user', self.get_social_auth(user))
 
         extra_data = social_auth.extra_data
 

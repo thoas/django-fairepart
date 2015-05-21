@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 from django.db.models import Q
 
 from .backends import get_backends
-from .models import Relation
+from .models import Relation, UserSocialAuth
 from .forms import InvitationForm
 
 from . import settings
@@ -29,8 +29,16 @@ class ImportView(generic.View):
 
         backend_class = backends.get(backend_name)
 
+        user = request.user
+
+        if 'social_user_id' in request.session:
+            try:
+                user.social_user = UserSocialAuth.objects.get(user=user, pk=request.session['social_user_id'])
+            except UserSocialAuth.DoesNotExist:
+                pass
+
         backend = backend_class()
-        backend.import_from_user(request.user)
+        backend.import_from_user(user)
 
         return HttpResponseRedirect(reverse('fairepart_relation_list', args=[backend_name, ]))
 
